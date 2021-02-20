@@ -12,21 +12,17 @@ import java.util.Optional;
 public class PersonController {
 
     private final PersonRepository personRepository;
+    private final AuthorityRepository authorityRepository;
 
     @Autowired
-    public PersonController(PersonRepository personRepository) {
+    public PersonController(PersonRepository personRepository, AuthorityRepository authorityRepository) {
         this.personRepository = personRepository;
+        this.authorityRepository = authorityRepository;
     }
 
     @GetMapping("/list")
     public Iterable<Person> list() {
-        Iterable<Person> people = personRepository.findAll();
-
-        for (Person person : people) {
-            System.out.println("P: " + person);
-        }
-
-        return people;
+        return personRepository.findAll();
     }
 
     @PostMapping("/save")
@@ -45,9 +41,33 @@ public class PersonController {
         return personRepository.findByUsernameAndEnabled(username, true);
     }
 
-    @GetMapping("/list-sorted")
-    public Iterable<Person> listSorted(@RequestParam String dateString) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+    /**
+     * GET http://localhost:8080/people/list-sorted?dateString=2021-02-13T10:30-0000
+     *
+     * @param dateString data ze strefą czasową, np. 2021-02-13T10:30-0000
+     * @return lista rekordów `person`
+     * @throws ParseException w przypadku błędnego formatu daty
+     */
+    @GetMapping("/list-created-after")
+    public Iterable<Person> listCreatedAfter(@RequestParam String dateString)
+            throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+
         return personRepository.findEnabledUsersCreatedAfter(sdf.parse(dateString));
+    }
+
+    @PostMapping("/disable")
+    public Optional<Person> disable(@RequestParam String username) {
+        Optional<Person> person = personRepository.findByUsernameAndEnabled(username, true);
+        person.ifPresent((value) -> {
+            value.setEnabled(false);
+            personRepository.save(value);
+        });
+        return person;
+    }
+
+    @GetMapping("/authorities")
+    public Iterable<Authority> getAuthorities(@RequestParam String username) {
+        return authorityRepository.findAllByPersonUsername(username);
     }
 }

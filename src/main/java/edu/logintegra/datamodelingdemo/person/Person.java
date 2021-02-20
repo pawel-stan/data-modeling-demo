@@ -1,10 +1,10 @@
 package edu.logintegra.datamodelingdemo.person;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.annotations.ColumnDefault;
+
+import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 public class Person {
@@ -13,13 +13,30 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false, unique = true, length = 100)
     private String username;
 
+    private String firstName;
+
+    private String lastName;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private Boolean passwordExpired;
+
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private Boolean enabled;
 
     private Date dateCreated;
+
+    @ManyToMany
+    @JoinTable(name = "person_authorities",
+            joinColumns = @JoinColumn(name = "person_id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id"))
+    Set<Authority> authorities;
 
     public Person(String username, String password, Boolean enabled) {
         this.username = username;
@@ -35,12 +52,32 @@ public class Person {
         return username;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public String getPassword() {
         return password;
     }
 
     public Boolean getEnabled() {
         return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Date getDateCreated() {
