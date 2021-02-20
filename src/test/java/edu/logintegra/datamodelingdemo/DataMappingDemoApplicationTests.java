@@ -1,4 +1,4 @@
-package edu.logintegra.datamappingdemo;
+package edu.logintegra.datamodelingdemo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
