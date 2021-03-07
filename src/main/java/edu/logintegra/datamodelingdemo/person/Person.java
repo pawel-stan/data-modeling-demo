@@ -1,5 +1,7 @@
 package edu.logintegra.datamodelingdemo.person;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import edu.logintegra.datamodelingdemo.company.Company;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -12,6 +14,11 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
+    @JsonIgnoreProperties("people")
+    private Company company;
 
     @Column(nullable = false, unique = true, length = 100)
     private String username;
@@ -43,6 +50,7 @@ public class Person {
         this.password = password;
         this.enabled = enabled;
         this.dateCreated = new Date();
+        this.passwordExpired = false;
     }
 
     protected Person() {
@@ -87,5 +95,13 @@ public class Person {
     @Override
     public String toString() {
         return String.format("%s (#%s)", username, id);
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

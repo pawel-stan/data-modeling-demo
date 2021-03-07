@@ -1,5 +1,7 @@
 package edu.logintegra.datamodelingdemo.person;
 
+import edu.logintegra.datamodelingdemo.company.Company;
+import edu.logintegra.datamodelingdemo.company.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +14,13 @@ import java.util.Optional;
 public class PersonController {
 
     private final PersonRepository personRepository;
+    private final CompanyRepository companyRepository;
     private final AuthorityRepository authorityRepository;
 
     @Autowired
-    public PersonController(PersonRepository personRepository, AuthorityRepository authorityRepository) {
+    public PersonController(PersonRepository personRepository, CompanyRepository companyRepository, AuthorityRepository authorityRepository) {
         this.personRepository = personRepository;
+        this.companyRepository = companyRepository;
         this.authorityRepository = authorityRepository;
     }
 
@@ -28,6 +32,16 @@ public class PersonController {
     @PostMapping("/save")
     public Person save(@RequestParam String username, @RequestParam String password) {
         Person person = new Person(username, password, true);
+        return personRepository.save(person);
+    }
+
+    @PostMapping("/saveWithCompany")
+    public Person saveWithCompany(@RequestParam String username, @RequestParam String password, @RequestParam String companyName) {
+        Company company = new Company(companyName);
+        companyRepository.save(company);
+
+        Person person = new Person(username, password, true);
+        person.setCompany(company);
         return personRepository.save(person);
     }
 
@@ -69,5 +83,11 @@ public class PersonController {
     @GetMapping("/authorities")
     public Iterable<Authority> getAuthorities(@RequestParam String username) {
         return authorityRepository.findAllByPersonUsername(username);
+    }
+
+    @GetMapping("{username}/authorities")
+    public Iterable<Authority> addToAuthorities(@PathVariable String username, @RequestParam String authority) {
+        // TODO
+        return null;
     }
 }
