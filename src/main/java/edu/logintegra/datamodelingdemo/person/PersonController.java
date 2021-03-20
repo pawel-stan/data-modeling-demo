@@ -5,6 +5,7 @@ import edu.logintegra.datamodelingdemo.company.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
@@ -13,12 +14,15 @@ import java.util.Optional;
 @RequestMapping("/people")
 public class PersonController {
 
+    private final PersonService personService;
+
     private final PersonRepository personRepository;
     private final CompanyRepository companyRepository;
     private final AuthorityRepository authorityRepository;
 
     @Autowired
-    public PersonController(PersonRepository personRepository, CompanyRepository companyRepository, AuthorityRepository authorityRepository) {
+    public PersonController(PersonService personService, PersonRepository personRepository, CompanyRepository companyRepository, AuthorityRepository authorityRepository) {
+        this.personService = personService;
         this.personRepository = personRepository;
         this.companyRepository = companyRepository;
         this.authorityRepository = authorityRepository;
@@ -80,14 +84,29 @@ public class PersonController {
         return person;
     }
 
-    @GetMapping("/authorities")
-    public Iterable<Authority> getAuthorities(@RequestParam String username) {
+    @GetMapping("{username}/authorities")
+    public Iterable<Authority> getAuthorities(@PathVariable String username) {
         return authorityRepository.findAllByPersonUsername(username);
     }
 
-    @GetMapping("{username}/authorities")
-    public Iterable<Authority> addToAuthorities(@PathVariable String username, @RequestParam String authority) {
-        // TODO
-        return null;
+    @PostMapping("{username}/authorities")
+    public Person addAuthority(@PathVariable String username, @RequestParam String authority) {
+        Optional<Person> optPerson = personRepository.findByUsernameAndEnabled(username, true);
+
+        if (optPerson.isEmpty()) {
+            throw new InvalidParameterException("No user found");
+        }
+
+        Optional<Authority> optAuthority = authorityRepository.findByAuthority(Authority.ROLE_PREFIX + authority);
+
+        if (optAuthority.isEmpty()) {
+            throw new InvalidParameterException("No authority found");
+        }
+
+        Person person = optPerson.get();
+
+        personService.addAuthority(person, optAuthority.get());
+
+        return person;
     }
 }

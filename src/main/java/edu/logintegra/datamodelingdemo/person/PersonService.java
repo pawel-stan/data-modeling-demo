@@ -13,11 +13,8 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    void save() {
-        Person person = new Person();
-
-        System.out.println("Nowy użytkownik: " + person);
-
+    public void addAuthority(Person person, Authority authority) {
+        person.authorities.add(authority);
         personRepository.save(person);
     }
 }

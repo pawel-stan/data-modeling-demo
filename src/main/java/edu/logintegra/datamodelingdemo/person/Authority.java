@@ -9,6 +9,8 @@ import javax.persistence.Id;
 @Entity
 public class Authority {
 
+    static final String ROLE_PREFIX = "ROLE_";
+
     @Id
     @GeneratedValue
     Long id;
