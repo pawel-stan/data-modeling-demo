@@ -40,12 +40,13 @@ public class PersonController {
     }
 
     @PostMapping("/saveWithCompany")
-    public Person saveWithCompany(@RequestParam String username, @RequestParam String password, @RequestParam String companyName) {
+    public Person saveWithCompany(@RequestParam String username, @RequestParam String lastName, @RequestParam String password, @RequestParam String companyName) {
         Company company = new Company(companyName);
         companyRepository.save(company);
 
         Person person = new Person(username, password, true);
         person.setCompany(company);
+        person.setLastName(lastName);
         return personRepository.save(person);
     }
 
