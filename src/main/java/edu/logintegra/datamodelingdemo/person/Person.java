@@ -2,6 +2,7 @@ package edu.logintegra.datamodelingdemo.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import edu.logintegra.datamodelingdemo.company.Company;
+import edu.logintegra.datamodelingdemo.enums.State;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -31,6 +32,9 @@ public class Person {
     @Column(nullable = false)
     @ColumnDefault("false")
     private Boolean passwordExpired;
+
+    @Enumerated(EnumType.STRING)
+    State state = State.PENDING;
 
     @Column(nullable = false)
     private String password;
