@@ -61,9 +61,9 @@ public class PersonController {
     }
 
     /**
-     * GET http://localhost:8080/people/list-sorted?dateString=2021-02-13T10:30-0000
+     * GET <a href="http://localhost:8080/people/list-created-after?dateString=2021-02-13T10:30-0000">people/list-created-after</a>
      *
-     * @param dateString data ze strefą czasową, np. 2021-02-13T10:30-0000
+     * @param dateString Data ze strefą czasową, np. 2021-02-13T10:30-0000
      * @return lista rekordów `person`
      * @throws ParseException w przypadku błędnego formatu daty
      */
